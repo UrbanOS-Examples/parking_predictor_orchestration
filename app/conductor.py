@@ -12,7 +12,7 @@ SQL_SERVER_PASSWORD = environ.get('SQL_SERVER_PASSWORD', None)
 DISCOVERY_URL = environ.get('DISCOVERY_URL', 'https://data.smartcolumbusos.com/api/v1')
 
 
-def _bcp_shell_command(table, file_path=f"{CONDUCTOR_PWD}/ref_data/{table}.dat", extra_arguments=[]):
+def _bcp_shell_command(table, file_path, extra_arguments=[]):
     process = subprocess.run([
         'bcp',
         table, 'in', file_path,
@@ -23,6 +23,9 @@ def _bcp_shell_command(table, file_path=f"{CONDUCTOR_PWD}/ref_data/{table}.dat",
         '-P', SQL_SERVER_PASSWORD
         ] + extra_arguments
     )
+
+def _bulk_copy_ref_file(table):
+    _bcp_shell_command(table, f"{CONDUCTOR_PWD}/ref_data/{table}.dat")
 
 
 def _bulk_copy_csv_file(table, file_path):
@@ -41,14 +44,16 @@ def _download_file(url):
 
 
 def _load_dataset(organization, dataset, table):
-    file_path = _download_file(f"{DISCOVERY_URL}/organization/{organization}/dataset/{dataset}/query")
+    file_path = _download_file(f"{DISCOVERY_URL}/organization/{organization}/dataset/{dataset}/query?limit=20")
     _bulk_copy_csv_file(table, file_path)
+
 
 def _conn_string():
     'Driver={ODBC Driver 17 for SQL Server};Server=' \
-    + SQL_SERVER_DATABASE + ';Database=' + SQL_SERVER_DATABASE \
+    + SQL_SERVER_URL + ';Database=' + SQL_SERVER_DATABASE \
     + ';UID=' + SQL_SERVER_USERNAME + ';PWD=' + SQL_SERVER_PASSWORD \
     + ';'
+
 
 def _run_sql_file(file_name):
     conn = pyodbc.connect(_conn_string(), autocommit=True)
@@ -61,14 +66,17 @@ def _run_sql_file(file_name):
 
     conn.close()
 
+
 def load_data():
-    _bcp_shell_command('ref_meter')
-    _bcp_shell_command('ref_zone')
-    _bcp_shell_command('ref_semihourly_timetable')
-    _bcp_shell_command('ref_calendar_parking')
+    _bulk_copy_ref_file('ref_meter')
+    _bulk_copy_ref_file('ref_zone')
+    _bulk_copy_ref_file('ref_semihourly_timetable')
+    _bulk_copy_ref_file('ref_calendar_parking')
 
     _load_dataset('ips_group', 'parking_meter_inventory_2020', 'stg_ips_group_parking_meter_inventory_2020')
     _load_dataset('ips_group', 'parking_meter_transactions_2018', 'stg_parking_tranxn_2018')
     _load_dataset('ips_group', 'parking_meter_transactions_2020', 'stg_parking_tranxn_2019')
     _load_dataset('ips_group', '7ab08634_3eda_4b05_a754_5eb6cab31326', 'stg_parking_tranxn_2015_2017')
     _load_dataset('parkmobile', 'parking_meter_transactions_2020', 'stg_parkmobile')
+
+_bulk_copy_ref_file('ref_meter')

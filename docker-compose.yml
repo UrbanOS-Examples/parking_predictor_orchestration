@@ -1,0 +1,15 @@
+version: "3"
+services:
+  sql_server:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    ports:
+      - "1433:1433"
+      
+    environment:
+      - "ACCEPT_EULA=Y"
+      - "SA_PASSWORD=yourStrong(!)Password"
+    healthcheck:
+      test: ["CMD", "bash", "-c", ": </dev/tcp/localhost/1433"]
+      interval: 5s
+      timeout: 20s
+      retries: 3

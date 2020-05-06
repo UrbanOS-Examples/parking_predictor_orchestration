@@ -20,3 +20,5 @@ ADD Pipfile* /
 
 RUN pipenv lock --requirements > requirements.txt \
   && pip3 install --requirement requirements.txt
+
+CMD [ "pipenv", "run", "python", "conductor.py" ]

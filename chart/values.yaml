@@ -1,0 +1,17 @@
+image:
+  repository: 199837183662.dkr.ecr.us-east-2.amazonaws.com/scos/predictive-parking-etl
+  tag: latest
+  pullPolicy: Always
+
+discoveryUrl: https://data.smartcolumbusos.com/api/v1
+
+mssql:
+  database: parking_prediction
+
+resources:
+  limits:
+    memory: 512Mi
+    cpu: 500m
+  requests:
+    memory: 512Mi
+    cpu: 500m

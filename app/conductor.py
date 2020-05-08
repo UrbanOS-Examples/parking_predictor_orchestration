@@ -39,21 +39,7 @@ def _bulk_copy_ref_file(table):
 def _bulk_copy_csv_file(table, file_path):
     logging.info(f"uploading source data file: {table}")
     _bcp_shell_command(table, file_path, ['-F', '2', '-t', ','])
-    _verify_bulk_copy(table, file_path)
-
-
-def _verify_bulk_copy(table, file_path):
-    file_count = _get_record_count_for_file(file_path)
-    table_count = _get_record_count_for_table(table)
-    logging.debug(f"Loaded {table_count}/{file_count} records into {table}")
-    assert table_count == file_count, f"bulk copy did not copy all records: {file_count} != {table_count}"
-
-
-def _get_record_count_for_file(file_path):
-    with open(file_path, 'r') as f:
-        count = len(f.readlines()) - 1
-
-    return count
+    return _get_record_count_for_table(table)
 
 
 def _get_record_count_for_table(table):
@@ -74,11 +60,25 @@ def _download_file(url):
     return f.name
 
 
+def _get_record_count(organization, dataset):
+    url = f"{DISCOVERY_URL}/organization/{organization}/dataset/{dataset}/query?columns=count(1)%20as%20count&_format=json"
+    with requests.get(url) as r:
+        r.raise_for_status()
+        count = r.json()[0]["count"]
+
+    return count
+
+
 def _load_dataset(organization, dataset, table):
     logging.info(f"Loading dataset {dataset} into {table}")
     limit = f"?limit={DISCOVERY_DATA_LIMIT}" if DISCOVERY_DATA_LIMIT else ''
     file_path = _download_file(f"{DISCOVERY_URL}/organization/{organization}/dataset/{dataset}/query{limit}")
-    _bulk_copy_csv_file(table, file_path)
+    record_count = _get_record_count(organization, dataset)
+    loaded_count = _bulk_copy_csv_file(table, file_path)
+
+    logging.debug(f"Loaded {loaded_count}/{record_count} records into {table}")
+    if not limit:
+        assert loaded_count == record_count, f"load dataset did not copy all records: {loaded_count} != {record_count}"
 
 
 def _conn_string():

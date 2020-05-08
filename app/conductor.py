@@ -5,7 +5,7 @@ from tempfile import NamedTemporaryFile
 import pyodbc
 import logging
 
-logging.basicConfig(level=logging.WARN)
+logging.basicConfig(level=logging.INFO)
 
 CONDUCTOR_PWD = path.dirname(path.abspath(__file__))
 SQL_SERVER_URL = environ.get('SQL_SERVER_URL', None)

@@ -60,6 +60,17 @@ def _download_file(url):
     return f.name
 
 
+def _query_dataset(url, query):
+    logging.warn(f"Downloading source data from: {url} using ({query})")
+    with requests.post(url, stream=True, data=query) as r:
+        r.raise_for_status()
+        with NamedTemporaryFile(delete=False) as f:
+            for chunk in r.iter_content(chunk_size=8192): 
+                f.write(chunk)
+
+    return f.name
+
+
 def _get_record_count(organization, dataset):
     url = f"{DISCOVERY_URL}/organization/{organization}/dataset/{dataset}/query?columns=count(1)%20as%20count&_format=json"
     with requests.get(url) as r:
@@ -69,11 +80,28 @@ def _get_record_count(organization, dataset):
     return count
 
 
-def _load_dataset(organization, dataset, table):
+def _get_query_record_count(query):
+    url = f"{DISCOVERY_URL}/query?_format=json"
+    count_query = f"select count(1) as count from ({query})"
+    with requests.post(url, data=count_query) as r:
+        r.raise_for_status()
+        count = r.json()[0]["count"]
+    
+    return count
+
+
+def _load_dataset(organization, dataset, table, query=None):
     logging.info(f"Loading dataset {dataset} into {table}")
-    limit = f"?limit={DISCOVERY_DATA_LIMIT}" if DISCOVERY_DATA_LIMIT else ''
-    file_path = _download_file(f"{DISCOVERY_URL}/organization/{organization}/dataset/{dataset}/query{limit}")
-    record_count = _get_record_count(organization, dataset)
+    
+    if query:
+        record_count = _get_query_record_count(query)
+        limit = f"limit {DISCOVERY_DATA_LIMIT}" if DISCOVERY_DATA_LIMIT else ''
+        file_path = _query_dataset(f"{DISCOVERY_URL}/query", f"select * from ({query}) {limit}")
+    else:
+        record_count = _get_record_count(organization, dataset)
+        limit = f"?limit={DISCOVERY_DATA_LIMIT}" if DISCOVERY_DATA_LIMIT else ''
+        file_path = _download_file(f"{DISCOVERY_URL}/organization/{organization}/dataset/{dataset}/query{limit}")
+
     loaded_count = _bulk_copy_csv_file(table, file_path)
 
     logging.debug(f"Loaded {loaded_count}/{record_count} records into {table}")
@@ -128,8 +156,10 @@ def load_data():
     _run_sql_file(f"{CONDUCTOR_PWD}/../sql/01_staging_tables.sql")
 
     _load_dataset('ips_group', 'parking_meter_inventory_2020', 'stg_ips_group_parking_meter_inventory_2020')
-    _load_dataset('ips_group', 'columbus_parking_meter_transactions_historical', 'stg_parking_tranxn')
     _load_dataset('parkmobile', 'parking_meter_transactions_2020', 'stg_parkmobile')
+
+    query = "SELECT * from ips_group__columbus_parking_meter_transactions_historical where cast(parkingenddate as timestamp) > date_add('month', -18, cast('2020-05-06 00:00:00' as timestamp))"
+    _load_dataset('ips_group', 'columbus_parking_meter_transactions_historical', 'stg_parking_tranxn', query)
 
 
 def _run_etl_for_ips():

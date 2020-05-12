@@ -128,9 +128,7 @@ def load_data():
     _run_sql_file(f"{CONDUCTOR_PWD}/../sql/01_staging_tables.sql")
 
     _load_dataset('ips_group', 'parking_meter_inventory_2020', 'stg_ips_group_parking_meter_inventory_2020')
-    _load_dataset('ips_group', 'parking_meter_transactions_2018', 'stg_parking_tranxn_2018')
-    _load_dataset('ips_group', 'parking_meter_transactions_2020', 'stg_parking_tranxn_2019')
-    _load_dataset('ips_group', '7ab08634_3eda_4b05_a754_5eb6cab31326', 'stg_parking_tranxn_2015_2017')
+    _load_dataset('ips_group', 'columbus_parking_meter_transactions_historical', 'stg_parking_tranxn')
     _load_dataset('parkmobile', 'parking_meter_transactions_2020', 'stg_parkmobile')
 
 

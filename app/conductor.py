@@ -61,7 +61,7 @@ def _download_file(url):
 
 
 def _query_dataset(url, query):
-    logging.warn(f"Downloading source data from: {url} using ({query})")
+    logging.debug(f"Downloading source data from: {url} using ({query})")
     with requests.post(url, stream=True, data=query) as r:
         r.raise_for_status()
         with NamedTemporaryFile(delete=False) as f:

@@ -10,22 +10,8 @@ CREATE TABLE [dbo].[stg_ips_group_parking_meter_inventory_2020](
 	[zonename] [varchar](250) NULL
 ) ON [PRIMARY];
 
-drop table [dbo].[stg_parking_tranxn_2018];
-CREATE TABLE [dbo].[stg_parking_tranxn_2018](
-	[parkingenddate] [varchar](250) NULL,
-	[parkingstartdate] [varchar](250) NULL,
-	[pole] [varchar](250) NULL,
-	[transactiontype] [varchar](250) NULL);
-
-drop table [dbo].[stg_parking_tranxn_2019];
-CREATE TABLE [dbo].[stg_parking_tranxn_2019](
-	[parkingenddate] [varchar](250) NULL,
-	[parkingstartdate] [varchar](250) NULL,
-	[pole] [varchar](250) NULL,
-	[transactiontype] [varchar](250) NULL);
-
-drop table [dbo].[stg_parking_tranxn_2015_2017];
-CREATE TABLE [dbo].[stg_parking_tranxn_2015_2017](
+drop table [dbo].[stg_parking_tranxn];
+CREATE TABLE [dbo].[stg_parking_tranxn](
 	[parkingenddate] [varchar](250) NULL,
 	[parkingstartdate] [varchar](250) NULL,
 	[pole] [varchar](250) NULL,

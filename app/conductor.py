@@ -113,7 +113,7 @@ def _conn_string():
     return 'Driver={ODBC Driver 17 for SQL Server};Server=' \
         + SQL_SERVER_URL + ';Database=' + SQL_SERVER_DATABASE \
         + ';UID=' + SQL_SERVER_USERNAME + ';PWD=' + SQL_SERVER_PASSWORD \
-        + ';'
+        + ';MARS_Connection=Yes;'
 
 
 def _run_statement(conn, statement):

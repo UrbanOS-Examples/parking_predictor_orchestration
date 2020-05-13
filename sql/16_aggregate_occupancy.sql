@@ -90,7 +90,6 @@ SELECT o.[zone_name]
   inner join ref_zone z
   on o.zone_name = z.zone_name
   and z.zone_eff_flg = 1 and z.pred_eff_flg = 1 and z.pm_only = 1
-  and  year(semihour) = 2019 -- change to other year when needed
   order by occ_id;
 
 
@@ -122,39 +121,50 @@ SELECT o.[zone_name]
   inner join ref_zone z
   on o.zone_name = z.zone_name
   and z.zone_eff_flg = 1 and z.pred_eff_flg = 1 and z.pm_only = 0
-  where year(semihour) = 2019  -- change to other year when needed
-  and [semihour] >= Convert(datetime, '2019-01-21' )
   and occu_vcnt > 0
   ) pmo
   on a.zone_name = pmo.zone_name
   and a.semihour = pmo.semihour;
 
-/* update total_cnt when meter number info not available for that month */
-update aggr    --1446 rows
-set [total_cnt] = o_ref.total_cnt
-from [dbo].[parking_zone_occupancy_aggr] aggr
-inner join
-	(
-	select a.[zone_name]
-			,month(a.semihour) mon
-			,max(a.[occu_mtr_cnt]) total_cnt
-	FROM [dbo].[parking_zone_occupancy_aggr] a
-	inner join
-	(
-	SELECT [zone_name]
-		   ,month(semihour) as mon
-	FROM [dbo].[parking_zone_occupancy_aggr]
-	where total_cnt = -1
-	group by zone_name, month(semihour)
-	) o
-	on a.zone_name = o.zone_name
-	and year(a.semihour) = 2019
-	and month(a.semihour) =  mon
-	group by a.zone_name, month(a.semihour) ) o_ref
-on aggr.zone_name = o_ref.zone_name
-and month(aggr.semihour) = o_ref.mon
-and aggr.total_cnt = -1;
+BEGIN
+      DECLARE @yearidx as int
+      DECLARE @maxyear as int
 
+      set @maxyear = 2020
+      set @yearidx = 2015
+      BEGIN
+      while (@yearidx <= @maxyear)
+      begin
+            /* update total_cnt when meter number info not available for that month */
+            update aggr    --1446 rows
+            set [total_cnt] = o_ref.total_cnt
+            from [dbo].[parking_zone_occupancy_aggr] aggr
+            inner join
+                  (
+                  select a.[zone_name]
+                              ,month(a.semihour) mon
+                              ,max(a.[occu_mtr_cnt]) total_cnt
+                  FROM [dbo].[parking_zone_occupancy_aggr] a
+                  inner join
+                  (
+                  SELECT [zone_name]
+                        ,month(semihour) as mon
+                  FROM [dbo].[parking_zone_occupancy_aggr]
+                  where total_cnt = -1
+                  group by zone_name, month(semihour)
+                  ) o
+                  on a.zone_name = o.zone_name
+                  and year(a.semihour) = @yearidx
+                  and month(a.semihour) =  mon
+                  group by a.zone_name, month(a.semihour) ) o_ref
+            on aggr.zone_name = o_ref.zone_name
+            and month(aggr.semihour) = o_ref.mon
+            and aggr.total_cnt = -1
+
+            set @yearidx = @yearidx + 1
+      END
+      END
+END;
 
 ---update occu_min_rate , occu_cnt_rate
 UPDATE o   --7906806

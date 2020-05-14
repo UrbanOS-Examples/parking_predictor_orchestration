@@ -20,11 +20,6 @@ CREATE TABLE [dbo].[stg_parking_tranxn](
 
 drop table [dbo].[stg_parkmobile];
 CREATE TABLE [dbo].[stg_parkmobile](
-	[duration] [varchar](250) NULL,
-	[location] [varchar](250) NULL,
 	[parking_end_date] [varchar](250) NULL,
 	[parking_start_date] [varchar](250) NULL,
-	[parkingamount] [varchar](250) NULL,
-	[paymentdate] [varchar](250) NULL,
-	[supplier] [varchar](250) NULL,
 	[zone] [varchar](250) NULL);

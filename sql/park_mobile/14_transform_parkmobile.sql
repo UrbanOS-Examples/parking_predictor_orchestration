@@ -13,9 +13,6 @@ CREATE TABLE [dbo].[transf_parkmobile](
 	[end_min] [int] NOT NULL,
 	[semihourly_min] [int] NOT NULL,
 	[semihourly_min_cnt] [int] NOT NULL,
-	[location] [varchar](50) NOT NULL,
-	[parkingamount] [numeric](6, 2) NOT NULL,
-	[paymentdate] [datetime] NOT NULL,
 	[cln_id] [bigint] NOT NULL,
 	[stg_id] [bigint] NOT NULL,
 PRIMARY KEY CLUSTERED 
@@ -37,9 +34,6 @@ INSERT INTO [dbo].[transf_parkmobile]
            ,[end_min]
            ,[semihourly_min]
            ,[semihourly_min_cnt]
-           ,[location]
-           ,[parkingamount]
-           ,[paymentdate]
            ,[cln_id]
            ,[stg_id])
 SELECT  -- TOP (10000) 
@@ -76,9 +70,6 @@ SELECT  -- TOP (10000)
 		dateadd(minute,(datediff(minute,0,[enddate])/30)*30, 0)) / 30
 	else 0
 	end semihourly_min_cnt  -- count of 30 minutes in the total parking time semihourly only
-,[location]
-,[parkingamount]
-,[paymentdate]
 ,[cln_id]
 ,[stg_id]
 FROM [dbo].[cln_parkmobile]

@@ -96,7 +96,7 @@ def _load_dataset(organization, dataset, table, query=None):
     if query:
         record_count = _get_query_record_count(query)
         limit = f"limit {DISCOVERY_DATA_LIMIT}" if DISCOVERY_DATA_LIMIT else ''
-        file_path = _query_dataset(f"{DISCOVERY_URL}/query", f"select * from ({query}) {limit}")
+        file_path = _query_dataset(f"{DISCOVERY_URL}/query?_format=csv", f"select * from ({query}) {limit}")
     else:
         record_count = _get_record_count(organization, dataset)
         limit = f"?limit={DISCOVERY_DATA_LIMIT}" if DISCOVERY_DATA_LIMIT else ''
@@ -156,13 +156,22 @@ def load_data():
     _run_sql_file(f"{CONDUCTOR_PWD}/../sql/01_staging_tables.sql")
 
     _load_dataset('ips_group', 'parking_meter_inventory_2020', 'stg_ips_group_parking_meter_inventory_2020')
-    _load_dataset('parkmobile', 'parking_meter_transactions_2020', 'stg_parkmobile')
 
     query = """
         with max_date as (select cast(max(parkingenddate) as timestamp) as maximum from ips_group__columbus_parking_meter_transactions_historical)
         SELECT * from ips_group__columbus_parking_meter_transactions_historical where cast(parkingenddate as timestamp) > date_add('month', -18, (select * from max_date))
     """
     _load_dataset('ips_group', 'columbus_parking_meter_transactions_historical', 'stg_parking_tranxn_historical', query)
+
+    parkmobile_query = """
+        with max_date as (select max(parking_action_stop_at_local) as maximum from parkmobile__park_columbus_parking_meter_sessions_data)
+        SELECT  parking_action_stop_at_local as parking_end_date,
+                parking_action_start_at_local as parking_start_date,
+                zone_code as zone
+        from parkmobile__park_columbus_parking_meter_sessions_data
+        where parking_action_stop_at_local > date_add('month', -18, (select * from max_date))
+    """
+    _load_dataset('parkmobile', 'park_columbus_parking_meter_sessions_data', 'stg_parkmobile', parkmobile_query)
 
 
 def _run_etl_for_ips():

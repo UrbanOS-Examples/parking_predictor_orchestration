@@ -4,9 +4,6 @@ CREATE TABLE [dbo].[cln_parkmobile](
 	[zone] [varchar](10) NOT NULL,
 	[startdate] [datetime] NOT NULL,
 	[enddate] [datetime] NOT NULL,
-	[location] [varchar](50) NOT NULL,
-	[parkingamount] [numeric](6, 2) NOT NULL,
-	[paymentdate] [datetime] NOT NULL,
 	[stg_id] [bigint] NOT NULL,
  CONSTRAINT [PK_cln_parkmobile] PRIMARY KEY CLUSTERED 
 (
@@ -18,18 +15,12 @@ INSERT INTO [dbo].[cln_parkmobile]
            ([zone]
            ,[startdate]
            ,[enddate]
-           ,[location]
-           ,[parkingamount]
-           ,[paymentdate]
            ,[stg_id])
 select
 [zone]
 ---- trim seconds to zeros
 ,dateadd(minute,datediff(minute,0,[parking_start_date]),0) startdate
 ,dateadd(minute,datediff(minute,0,[parking_end_date]),0) enddate
-,[location]
-,[parkingamount]
-,[paymentdate]
 ,[stg_id]
 from [dbo].[stgcfm_parkmobile]
 where

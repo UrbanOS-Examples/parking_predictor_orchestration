@@ -49,8 +49,6 @@ inner join [dbo].[ref_zone] z
 	on z.zone_id = m.zone_id
 where
 z.zone_eff_flg = 1
-and
-datepart(year, o.[semihour]) in (2015, 2016, 2017, 2018, 2019)
 group by
 z.zone_name
 ,o.[semihour]

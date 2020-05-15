@@ -10,8 +10,8 @@ CREATE TABLE [dbo].[stg_ips_group_parking_meter_inventory_2020](
 	[zonename] [varchar](250) NULL
 ) ON [PRIMARY];
 
-drop table [dbo].[stg_parking_tranxn];
-CREATE TABLE [dbo].[stg_parking_tranxn](
+drop table [dbo].[stg_parking_tranxn_historical];
+CREATE TABLE [dbo].[stg_parking_tranxn_historical](
 	[parkingenddate] [varchar](250) NULL,
 	[parkingstartdate] [varchar](250) NULL,
 	[pole] [varchar](250) NULL,

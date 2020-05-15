@@ -13,4 +13,4 @@ CREATE TABLE [dbo].[stg_parking_tranxn](
 ) ON [PRIMARY];
 
 insert into [dbo].[stg_parking_tranxn] (parkingenddate, parkingstartdate, pole, transactiontype) 
-SELECT parkingenddate, parkingstartdate, pole, transactiontype from [dbo].[stg_parking_tranxn];
+SELECT parkingenddate, parkingstartdate, pole, transactiontype from [dbo].[stg_parking_tranxn_historical];

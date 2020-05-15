@@ -23,7 +23,7 @@ INSERT INTO [dbo].[parking_occupancy]
 SELECT p.[meter] ,t.[semihour]      
 FROM [dbo].[ref_meter] p
 cross join [dbo].[ref_semihourly_timetable] t
--- where meter in (select distinct meter from [dbo].[transf_parking_time])
+where meter in (select distinct meter from [dbo].[transf_parking_time])
 order by
 p.[meter]
 ,t.semihour; 
@@ -105,5 +105,4 @@ BEGIN
 	update [dbo].[parking_occupancy]
 	set [occu_flg] = 1  -- 37161207
 	where [occu_min] > 0
-	And year(semihour) in (2014, 2015, 2016, 2017, 2018, 2019)
 END;

@@ -113,7 +113,7 @@ def _conn_string():
     return 'Driver={ODBC Driver 17 for SQL Server};Server=' \
         + SQL_SERVER_URL + ';Database=' + SQL_SERVER_DATABASE \
         + ';UID=' + SQL_SERVER_USERNAME + ';PWD=' + SQL_SERVER_PASSWORD \
-        + ';'
+        + ';MARS_Connection=Yes;'
 
 
 def _run_statement(conn, statement):
@@ -162,7 +162,7 @@ def load_data():
         with max_date as (select cast(max(parkingenddate) as timestamp) as maximum from ips_group__columbus_parking_meter_transactions_historical)
         SELECT * from ips_group__columbus_parking_meter_transactions_historical where cast(parkingenddate as timestamp) > date_add('month', -18, (select * from max_date))
     """
-    _load_dataset('ips_group', 'columbus_parking_meter_transactions_historical', 'stg_parking_tranxn', query)
+    _load_dataset('ips_group', 'columbus_parking_meter_transactions_historical', 'stg_parking_tranxn_historical', query)
 
 
 def _run_etl_for_ips():

@@ -55,7 +55,6 @@ begin
             ) ref
     ON o.[zone_name] = ref.[zone_name]
     where datepart(year, o.[semihour]) = @yearidx
-    and o.[semihour] >= Convert(datetime, '2019-01-21' )
     and o.total_cnt is NULL
 
     set @yearidx = @yearidx + 1

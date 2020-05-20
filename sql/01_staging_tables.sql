@@ -10,13 +10,11 @@ CREATE TABLE [dbo].[stg_ips_group_parking_meter_inventory_2020](
 	[zonename] [varchar](250) NULL
 ) ON [PRIMARY];
 
-drop table [dbo].[stg_parking_tranxn_historical];
-CREATE TABLE [dbo].[stg_parking_tranxn_historical](
-	[parkingenddate] [varchar](250) NULL,
-	[parkingstartdate] [varchar](250) NULL,
-	[pole] [varchar](250) NULL,
-	[transactiontype] [varchar](250) NULL,
-    [totalcredit] [varchar](250) NULL);
+drop table [dbo].[stg_parking_tranxn_source];
+CREATE TABLE [dbo].[stg_parking_tranxn_source](
+	[starttime] [varchar](250) NULL,
+	[endtime] [varchar](250) NULL,
+	[meterid] [varchar](250) NULL);
 
 drop table [dbo].[stg_parkmobile];
 CREATE TABLE [dbo].[stg_parkmobile](

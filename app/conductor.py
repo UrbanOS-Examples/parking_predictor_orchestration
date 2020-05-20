@@ -158,10 +158,10 @@ def load_data():
     _load_dataset('ips_group', 'parking_meter_inventory_2020', 'stg_ips_group_parking_meter_inventory_2020')
 
     query = """
-        with max_date as (select cast(max(parkingenddate) as timestamp) as maximum from ips_group__columbus_parking_meter_transactions_historical)
-        SELECT * from ips_group__columbus_parking_meter_transactions_historical where cast(parkingenddate as timestamp) > date_add('month', -18, (select * from max_date))
+        with max_date as (select cast(max(EndTime) as timestamp) as maximum from ips_group__columbus_parking_meter_transactions)
+        SELECT starttime, endtime, meterid from ips_group__columbus_parking_meter_transactions where cast(EndTime as timestamp) > date_add('month', -18, (select * from max_date))
     """
-    _load_dataset('ips_group', 'columbus_parking_meter_transactions_historical', 'stg_parking_tranxn_historical', query)
+    _load_dataset('ips_group', 'columbus_parking_meter_transactions', 'stg_parking_tranxn_source', query)
 
     parkmobile_query = """
         with max_date as (select max(parking_action_stop_at_local) as maximum from parkmobile__park_columbus_parking_meter_sessions_data)

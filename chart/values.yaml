@@ -7,6 +7,7 @@ discoveryUrl: https://data.smartcolumbusos.com/api/v1
 
 mssql:
   database: parking_prediction
+  dataLimitMonths: 24
 
 resources:
   limits:

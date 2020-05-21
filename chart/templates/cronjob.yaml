@@ -30,7 +30,7 @@ spec:
             - name: SQL_SERVER_PASSWORD
               value: {{ .Values.mssql.password }}
             - name: SQL_SERVER_DATA_LIMIT_MONTHS
-              value: {{ .Values.mssql.dataLimitMonths }}
+              value: {{ quote .Values.mssql.dataLimitMonths }}
             - name: DISCOVERY_URL
               value: {{ .Values.discoveryUrl }}
             resources:

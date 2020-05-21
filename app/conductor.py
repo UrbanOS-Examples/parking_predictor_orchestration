@@ -12,6 +12,7 @@ SQL_SERVER_URL = environ.get('SQL_SERVER_URL', None)
 SQL_SERVER_DATABASE = environ.get('SQL_SERVER_DATABASE', 'parking_prediction')
 SQL_SERVER_USERNAME = environ.get('SQL_SERVER_USERNAME', 'padmin')
 SQL_SERVER_PASSWORD = environ.get('SQL_SERVER_PASSWORD', None)
+SQL_SERVER_DATA_LIMIT_MONTHS = environ.get('SQL_SERVER_DATA_LIMIT_MONTHS', 18)
 DISCOVERY_URL = environ.get('DISCOVERY_URL', 'https://data.smartcolumbusos.com/api/v1')
 DISCOVERY_DATA_LIMIT = environ.get('DISCOVERY_DATA_LIMIT', False)
 
@@ -157,19 +158,19 @@ def load_data():
 
     _load_dataset('ips_group', 'parking_meter_inventory_2020', 'stg_ips_group_parking_meter_inventory_2020')
 
-    query = """
+    query = f"""
         with max_date as (select max(EndTime) as maximum from ips_group__columbus_parking_meter_transactions)
-        SELECT starttime, endtime, meterid from ips_group__columbus_parking_meter_transactions where EndTime > date_add('month', -18, (select * from max_date))
+        SELECT starttime, endtime, meterid from ips_group__columbus_parking_meter_transactions where EndTime > date_add('month', -{SQL_SERVER_DATA_LIMIT_MONTHS}, (select * from max_date))
     """
     _load_dataset('ips_group', 'columbus_parking_meter_transactions', 'stg_parking_tranxn_source', query)
 
-    parkmobile_query = """
+    parkmobile_query = f"""
         with max_date as (select max(parking_action_stop_at_local) as maximum from parkmobile__park_columbus_parking_meter_sessions_data)
         SELECT  parking_action_stop_at_local as parking_end_date,
                 parking_action_start_at_local as parking_start_date,
                 zone_code as zone
         from parkmobile__park_columbus_parking_meter_sessions_data
-        where parking_action_stop_at_local > date_add('month', -18, (select * from max_date))
+        where parking_action_stop_at_local > date_add('month', -{SQL_SERVER_DATA_LIMIT_MONTHS}, (select * from max_date))
     """
     _load_dataset('parkmobile', 'park_columbus_parking_meter_sessions_data', 'stg_parkmobile', parkmobile_query)
 

@@ -12,9 +12,9 @@ CREATE TABLE [dbo].[stg_ips_group_parking_meter_inventory_2020](
 
 drop table [dbo].[stg_parking_tranxn_source];
 CREATE TABLE [dbo].[stg_parking_tranxn_source](
-	[starttime] [varchar](250) NULL,
 	[endtime] [varchar](250) NULL,
-	[meterid] [varchar](250) NULL);
+	[meterid] [varchar](250) NULL,
+	[starttime] [varchar](250) NULL);
 
 drop table [dbo].[stg_parkmobile];
 CREATE TABLE [dbo].[stg_parkmobile](

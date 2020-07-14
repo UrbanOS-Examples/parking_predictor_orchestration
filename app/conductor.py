@@ -1,9 +1,11 @@
 from os import path, environ, walk
 import subprocess
 import requests
+import sys
 from tempfile import NamedTemporaryFile
 import pyodbc
 import logging
+import backoff
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,6 +18,11 @@ SQL_SERVER_DATA_LIMIT_MONTHS = environ.get('SQL_SERVER_DATA_LIMIT_MONTHS', 18)
 DISCOVERY_URL = environ.get('DISCOVERY_URL', 'https://data.smartcolumbusos.com/api/v1')
 DISCOVERY_DATA_LIMIT = environ.get('DISCOVERY_DATA_LIMIT', False)
 
+def _log_exception(details):
+  print("Backing off {wait:0.1f} seconds afters {tries} tries "
+          "calling function {target} with args {args} and kwargs "
+          "{kwargs}".format(**details))
+  print(f"Backing off due to exception {sys.exc_info()}")
 
 def _bcp_shell_command(table, file_path, extra_arguments=[]):
     command_args = [
@@ -49,7 +56,11 @@ def _get_record_count_for_table(table):
 
     return count
 
-
+@backoff.on_exception(backoff.constant,
+                    Exception,
+                    on_backoff=_log_exception,
+                    max_tries=5,
+                    interval=60)
 def _download_file(url):
     logging.debug(f"Downloading source data from: {url}")
     with requests.get(url, stream=True) as r:
@@ -60,7 +71,11 @@ def _download_file(url):
 
     return f.name
 
-
+@backoff.on_exception(backoff.constant,
+                    Exception,
+                    on_backoff=_log_exception,
+                    max_tries=5,
+                    interval=60)
 def _query_dataset(url, query):
     logging.debug(f"Downloading source data from: {url} using ({query})")
     with requests.post(url, stream=True, data=query) as r:

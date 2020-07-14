@@ -11,6 +11,7 @@ pytest-docker-compose = "*"
 [packages]
 pyodbc = "*"
 requests = "*"
+backoff = "*"
 
 [requires]
 python_version = "3"

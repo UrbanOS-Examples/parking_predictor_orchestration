@@ -98,10 +98,10 @@ update a  --312117 rows
 set
 	[occu_min] = a.[occu_min] + pmo.[occu_min]
    ,[occu_mtr_cnt] = a.[occu_mtr_cnt] + pmo.[occu_vcnt]
-   ,[no_trxn_one_day_flg] = (case when (a.no_trxn_one_day_flg = 1 and pmo.no_trxn_one_day is NULL) 
-							then NULL else a.no_trxn_one_day_flg end)
-   ,[no_trxn_one_week_flg] = (case when (a.no_trxn_one_week_flg = 1 and pmo.no_trxn_one_week is NULL) 
-							then NULL else a.no_trxn_one_week_flg end)
+   ,[no_trxn_one_day_flg] = (case when (a.no_trxn_one_day_flg = 1 and pmo.no_trxn_one_day = 0)
+							then 0 else a.no_trxn_one_day_flg end)
+   ,[no_trxn_one_week_flg] = (case when (a.no_trxn_one_week_flg = 1 and pmo.no_trxn_one_week = 0)
+							then 0 else a.no_trxn_one_week_flg end)
    ,[total_cnt] = (case when a.total_cnt = pmo.total_cnt then pmo.total_cnt else -1 end)
    ,[no_data] = (case when a.no_data > pmo.no_data then pmo.no_data else a.no_data end)
 from [dbo].[parking_zone_occupancy_aggr] a

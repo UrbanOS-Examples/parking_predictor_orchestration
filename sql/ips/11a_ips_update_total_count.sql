@@ -27,9 +27,9 @@ begin
             INNER JOIN  [dbo].[ref_meter] m 
             ON trans.meter = m.meter
             AND datepart(month, startdate) = @monthidx
-            AND m.zone_id is not null
+            AND m.zone_name is not null
             INNER JOIN [dbo].[ref_zone] z
-            ON m.zone_id = z.zone_id AND z.zone_eff_flg = 1
+            ON m.zone_name = z.zone_name AND z.zone_eff_flg = 1
             GROUP BY z.zone_name)  cnt
         ON o.zone_name = cnt.zone_name
         AND datepart(year, o.semihour) = @yearidx

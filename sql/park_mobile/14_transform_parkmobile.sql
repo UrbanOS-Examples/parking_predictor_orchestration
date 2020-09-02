@@ -82,7 +82,6 @@ CREATE TABLE [dbo].[parkmobile_zone_occupancy](
 	[semihour] [datetime] NOT NULL,
 	[occu_min] [int] NOT NULL,
 	[occu_vcnt] [int] NOT NULL,
-	[zone_id] [int] NULL,
 	[no_trxn_one_day] [smallint] NULL,
 	[no_trxn_one_week] [smallint] NULL,
 	[total_cnt] [int] NULL,
@@ -107,11 +106,9 @@ ALTER TABLE [dbo].[parkmobile_zone_occupancy] ADD  CONSTRAINT [DF_parkmobile_zon
 
 INSERT INTO [dbo].[parkmobile_zone_occupancy]
            ([zone_name]
-		   ,[zone_id]
            ,[semihour])
 SELECT
  z.[zone_name]
-,z.[zone_id]
 ,t.[semihour]
 FROM [dbo].[ref_zone] z
 cross join [dbo].[ref_semihourly_timetable] t

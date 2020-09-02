@@ -7,6 +7,8 @@ import pyodbc
 import logging
 import backoff
 
+import semihour
+
 logging.basicConfig(level=logging.INFO)
 
 CONDUCTOR_PWD = path.dirname(path.abspath(__file__))
@@ -176,6 +178,7 @@ def load_data():
     """
     _load_dataset('city_of_columbus', 'columbus_parking_meters', 'ref_zone', query)
 
+    semihour.generate_timetable(f"{CONDUCTOR_PWD}/../ref_data/ref_semihourly_timetable.dat", SQL_SERVER_DATA_LIMIT_MONTHS)
     _bulk_copy_ref_file('ref_semihourly_timetable')
     _bulk_copy_ref_file('ref_calendar_parking')
 

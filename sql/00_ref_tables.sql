@@ -1,6 +1,5 @@
 drop table [dbo].[ref_meter];
 CREATE TABLE [dbo].[ref_meter](
-	-- [meter_id] [int] IDENTITY(1,1) NOT NULL,
 	[meter] [varchar](50) NOT NULL,
 	[zone_name] [int] NULL);
 

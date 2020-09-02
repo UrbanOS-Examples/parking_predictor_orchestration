@@ -12,3 +12,5 @@ __pycache__/
 .pytest_cache/
 
 .DS_Store
+
+ref_data/ref_semihourly_timetable.dat

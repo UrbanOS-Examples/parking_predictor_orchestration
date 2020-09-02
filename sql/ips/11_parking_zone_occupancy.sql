@@ -46,7 +46,7 @@ from [dbo].[parking_occupancy] o
 inner join [dbo].[ref_meter] m
 	on m.meter = o.meter
 inner join [dbo].[ref_zone] z
-	on z.zone_id = m.zone_id
+	on z.zone_name = m.zone_name
 where
 z.zone_eff_flg = 1
 group by

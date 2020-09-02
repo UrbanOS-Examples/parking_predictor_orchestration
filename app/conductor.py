@@ -7,6 +7,8 @@ import pyodbc
 import logging
 import backoff
 
+import semihour
+
 logging.basicConfig(level=logging.INFO)
 
 CONDUCTOR_PWD = path.dirname(path.abspath(__file__))
@@ -164,8 +166,19 @@ def _run_sql_file(file_name):
 def load_data():
     _run_sql_file(f"{CONDUCTOR_PWD}/../sql/00_ref_tables.sql")
 
-    _bulk_copy_ref_file('ref_meter')
-    _bulk_copy_ref_file('ref_zone')
+    query = f"""
+        with metered_zones as (SELECT case "meter id" when '' then '-1' else "meter id" end as meter, "PM Zone Number" as zone_name FROM city_of_columbus__columbus_parking_meters)
+        select distinct meter, zone_name from metered_zones where meter != '-1'
+    """
+    _load_dataset('city_of_columbus', 'columbus_parking_meters', 'ref_meter', query)
+
+    query = f"""
+        with pm_or_not as (select case "meter id" when '' then 1 else 0 end as pm_only, * from city_of_columbus__columbus_parking_meters)
+        select "PM Zone Number" as zone_name, pm_only, count(1) as total_cnt, 1 as zone_eff_flg, 1 as pred_eff_flg from pm_or_not group by "PM Zone Number", pm_only
+    """
+    _load_dataset('city_of_columbus', 'columbus_parking_meters', 'ref_zone', query)
+
+    semihour.generate_timetable(f"{CONDUCTOR_PWD}/../ref_data/ref_semihourly_timetable.dat", SQL_SERVER_DATA_LIMIT_MONTHS)
     _bulk_copy_ref_file('ref_semihourly_timetable')
     _bulk_copy_ref_file('ref_calendar_parking')
 

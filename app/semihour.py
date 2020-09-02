@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import csv
 
 def generate_timetable(file_name, months=1):
-    start_date = datetime.now() - timedelta(days=(months * 30) + 5)
+    start_date = datetime.now() - timedelta(days=(months * 30) + 30)
     start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
 
     target_date = datetime.now() + timedelta(days=30)

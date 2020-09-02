@@ -16,7 +16,7 @@ SQL_SERVER_URL = environ.get('SQL_SERVER_URL', None)
 SQL_SERVER_DATABASE = environ.get('SQL_SERVER_DATABASE', 'parking_prediction')
 SQL_SERVER_USERNAME = environ.get('SQL_SERVER_USERNAME', 'padmin')
 SQL_SERVER_PASSWORD = environ.get('SQL_SERVER_PASSWORD', None)
-SQL_SERVER_DATA_LIMIT_MONTHS = environ.get('SQL_SERVER_DATA_LIMIT_MONTHS', 18)
+SQL_SERVER_DATA_LIMIT_MONTHS = int(environ.get('SQL_SERVER_DATA_LIMIT_MONTHS', "18"))
 DISCOVERY_URL = environ.get('DISCOVERY_URL', 'https://data.smartcolumbusos.com/api/v1')
 DISCOVERY_DATA_LIMIT = environ.get('DISCOVERY_DATA_LIMIT', False)
 

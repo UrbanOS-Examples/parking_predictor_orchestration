@@ -18,7 +18,7 @@ SQL_SERVER_USERNAME = environ.get('SQL_SERVER_USERNAME', 'padmin')
 SQL_SERVER_PASSWORD = environ.get('SQL_SERVER_PASSWORD', None)
 SQL_SERVER_DATA_LIMIT_MONTHS = int(environ.get('SQL_SERVER_DATA_LIMIT_MONTHS', "18"))
 DISCOVERY_URL = environ.get('DISCOVERY_URL', 'https://data.smartcolumbusos.com/api/v1')
-DISCOVERY_DATA_LIMIT = environ.get('DISCOVERY_DATA_LIMIT', False)
+DISCOVERY_DATA_LIMIT = int(environ.get('DISCOVERY_DATA_LIMIT', False))
 
 def _log_exception(details):
   print("Backing off {wait:0.1f} seconds afters {tries} tries "
@@ -70,6 +70,7 @@ def _download_file(url):
         with NamedTemporaryFile(delete=False) as f:
             for chunk in r.iter_content(chunk_size=8192): 
                 f.write(chunk)
+                f.flush()
 
     return f.name
 
@@ -85,6 +86,7 @@ def _query_dataset(url, query):
         with NamedTemporaryFile(delete=False) as f:
             for chunk in r.iter_content(chunk_size=8192): 
                 f.write(chunk)
+                f.flush()
 
     return f.name
 

@@ -175,8 +175,8 @@ def load_data():
     _load_dataset('city_of_columbus', 'columbus_parking_meters', 'ref_meter', query)
 
     query = f"""
-        with pm_or_not as (select case "meter id" when '' then 1 else 0 end as pm_only, * from city_of_columbus__columbus_parking_meters)
-        select "PM Zone Number" as zone_name, pm_only, count(1) as total_cnt, 1 as zone_eff_flg, 1 as pred_eff_flg from pm_or_not group by "PM Zone Number", pm_only
+        with pm_or_not as (select case when cast("PM Zone Number" as int) < 10000 then 1 else 0 end as pm_zone, case "meter id" when '' then 1 else 0 end as pm_only, * from city_of_columbus__columbus_parking_meters)
+        select "PM Zone Number" as zone_name, pm_only, count(1) as total_cnt, 1 as zone_eff_flg, 1 as pred_eff_flg from pm_or_not where pm_zone = 0 group by "PM Zone Number", pm_only
     """
     _load_dataset('city_of_columbus', 'columbus_parking_meters', 'ref_zone', query)
 

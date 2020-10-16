@@ -32,4 +32,5 @@ export SQL_SERVER_DATABASE=master
 export SQL_SERVER_USERNAME=sa
 export SQL_SERVER_PASSWORD='yourStrong(!)Password'
 export DISCOVERY_DATA_LIMIT=500
+export SQL_SERVER_DATA_LIMIT_MONTHS=3
 ```

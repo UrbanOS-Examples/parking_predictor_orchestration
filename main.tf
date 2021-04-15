@@ -1,41 +1,42 @@
 provider "aws" {
   version = "~> 3.0"
-  region  = "${var.region}"
+  region  = var.region
 
   assume_role {
-    role_arn = "${var.role_arn}"
+    role_arn = var.role_arn
   }
 }
 
 data "terraform_remote_state" "env_remote_state" {
   backend   = "s3"
-  workspace = "${terraform.workspace}"
+  workspace = terraform.workspace
 
-  config {
-    bucket   = "${var.alm_state_bucket_name}"
+  config = {
+    bucket   = var.alm_state_bucket_name
     key      = "operating-system"
     region   = "us-east-2"
-    role_arn = "${var.alm_role_arn}"
+    role_arn = var.alm_role_arn
   }
 }
 
 resource "local_file" "kubeconfig" {
   filename = "${path.module}/outputs/kubeconfig"
-  content = "${data.terraform_remote_state.env_remote_state.eks_cluster_kubeconfig}"
+  content  = data.terraform_remote_state.env_remote_state.outputs.eks_cluster_kubeconfig
 }
 
 data "aws_secretsmanager_secret_version" "data_science_db_password" {
-  secret_id = "${data.terraform_remote_state.env_remote_state.data_science_db_secret_id}"
+  secret_id = data.terraform_remote_state.env_remote_state.outputs.data_science_db_secret_id
 }
 
 resource "local_file" "helm_vars" {
   filename = "${path.module}/outputs/${terraform.workspace}.yaml"
-  content = <<EOF
+  content  = <<EOF
 mssql:
-  username: "${data.terraform_remote_state.env_remote_state.data_science_db_username}"
-  server: "${data.terraform_remote_state.env_remote_state.data_science_db_server}"
+  username: "${data.terraform_remote_state.env_remote_state.outputs.data_science_db_username}"
+  server: "${data.terraform_remote_state.env_remote_state.outputs.data_science_db_server}"
   password: "${data.aws_secretsmanager_secret_version.data_science_db_password.secret_string}"
 EOF
+
 }
 
 resource "null_resource" "helm_deploy" {
@@ -50,12 +51,13 @@ helm upgrade --install predictive-parking-etl ./chart --namespace=predictive-par
     --values ${local_file.helm_vars.filename} \
     ${var.extra_helm_args}
 EOF
+
   }
 
-  triggers {
+  triggers = {
     # Triggers a list of values that, when changed, will cause the resource to be recreated
     # ${uuid()} will always be different thus always executing above local-exec
-    hack_that_always_forces_null_resources_to_execute = "${uuid()}"
+    hack_that_always_forces_null_resources_to_execute = uuid()
   }
 }
 
